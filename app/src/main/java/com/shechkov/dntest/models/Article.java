@@ -1,4 +1,4 @@
-package com.shechkov.dntest.model;
+package com.shechkov.dntest.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -1,8 +1,10 @@
-package com.shechkov.dntest;
+package com.shechkov.dntest.ui.main;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.shechkov.dntest.R;
 
 public class MainActivity extends AppCompatActivity {
 

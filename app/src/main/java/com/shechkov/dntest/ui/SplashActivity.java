@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.shechkov.dntest.MainActivity;
+import com.shechkov.dntest.ui.main.MainActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
