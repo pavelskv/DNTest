@@ -3,4 +3,11 @@
     <color name="colorPrimary">#47ADAD</color>
     <color name="colorPrimaryDark">#3C8F8F</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="dark_grey">#424242</color>
+    <color name="colorGrayText">#929498</color>
+    <color name="placeholder_grey_20">#4DAAADC4</color>
+    <color name="button_grey">#757575</color>
+
+    <color name="test">#26000000</color>
 </resources>

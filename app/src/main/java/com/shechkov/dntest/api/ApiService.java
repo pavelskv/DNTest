@@ -11,6 +11,6 @@ import retrofit2.http.Query;
 public interface ApiService {
 
     @GET("everything")
-    Observable<List<News>> getNews(@Query("q") String query, @Query("from") String date, @Query("sortBy") String sortBy, @Query("apiKey") String apiKey, @Query("page") int page);
+    Observable<News> getNews(@Query("q") String query, @Query("from") String date, @Query("sortBy") String sortBy, @Query("apiKey") String apiKey, @Query("page") int page);
 
 }
