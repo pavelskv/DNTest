@@ -1,8 +1,8 @@
 package com.shechkov.dntest.di.module;
 
-import android.app.Application;
+import android.content.Context;
 
-import javax.inject.Singleton;
+import com.shechkov.dntest.di.scope.AppScope;
 
 import dagger.Module;
 import dagger.Provides;
@@ -10,15 +10,16 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    private Application mApplication;
+    private final Context context;
 
-    public AppModule(Application mApplication) {
-        this.mApplication = mApplication;
+    public AppModule(Context context) {
+        this.context = context;
     }
 
+    @AppScope
     @Provides
-    @Singleton
-    Application provideApplication(){
-        return mApplication;
+    Context provideContext(){
+        return context;
     }
+
 }

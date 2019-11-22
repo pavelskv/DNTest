@@ -1,8 +1,6 @@
-package com.shechkov.dntest.api;
+package com.shechkov.dntest.data.api;
 
-import com.shechkov.dntest.models.News;
-
-import java.util.List;
+import com.shechkov.dntest.model.News;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;

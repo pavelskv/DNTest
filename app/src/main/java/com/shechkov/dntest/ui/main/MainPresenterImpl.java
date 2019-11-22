@@ -1,19 +1,15 @@
 package com.shechkov.dntest.ui.main;
 
-import android.app.Application;
+import android.content.Context;
 
 import com.shechkov.dntest.BaseApp;
-import com.shechkov.dntest.api.ApiService;
-import com.shechkov.dntest.di.component.ApplicationComponent;
-import com.shechkov.dntest.models.News;
+import com.shechkov.dntest.data.api.ApiService;
+import com.shechkov.dntest.model.News;
 import com.shechkov.dntest.ui.base.BasePresenter;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observer;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -21,14 +17,17 @@ import io.reactivex.schedulers.Schedulers;
 public class MainPresenterImpl extends BasePresenter<MainContract.View> implements MainContract.Presenter {
 
     @Inject
-    public ApiService apiService;
+    ApiService apiService;
 
-    public MainPresenterImpl(Application applicationComponent) {
-        ((BaseApp) applicationComponent).getApplicationComponent().inject(this);
+    public MainPresenterImpl(Context context) {
+        ((BaseApp) context).getComponentManager()
+                .getAppComponent()
+                .inject(this);
     }
 
     @Override
     public void loadData() {
+        getView().clear();
         getView().showLoading();
 
         apiService.getNews("android", "2019-04-00", "publishedAt", "26eddb253e7840f988aec61f2ece2907", 1)
@@ -42,7 +41,6 @@ public class MainPresenterImpl extends BasePresenter<MainContract.View> implemen
 
                     @Override
                     public void onNext(News news) {
-                        getView().clear();
                         getView().setData(news);
                     }
 
@@ -85,10 +83,5 @@ public class MainPresenterImpl extends BasePresenter<MainContract.View> implemen
                         getView().hideLoading();
                     }
                 });
-    }
-
-    @Override
-    public void viewIsReady() {
-
     }
 }

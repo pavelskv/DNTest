@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/dark_grey"
-            android:text="Connection error"/>
+            android:text="@string/connection_error"/>
 
         <TextView
             android:id="@+id/text_error"
@@ -30,7 +30,7 @@
             android:layout_gravity="center"
             android:textColor="@color/button_grey"
             android:layout_marginTop="4dp"
-            android:text="The server took too long to respond."/>
+            android:text="@string/server_msg"/>
 
         <Button
             android:id="@+id/btn_retry"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
-            android:text="Повторить"
+            android:text="@string/retry_btn"
             android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>

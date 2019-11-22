@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DNTest</string>
+    <string name="error_msg">Ошибка</string>
+    <string name="news_title">Новости</string>
+    <string name="connection_error">Ошибка соединения</string>
+    <string name="server_msg">Сервер не отвечает</string>
+    <string name="retry_btn">Повторить</string>
+    <string name="retry_press_msg">Нажмите, чтобы повторить попытку</string>
+    <string name="retry_icon">Повторить</string>
+    <string name="news_image">Изображение новости</string>
+</resources>

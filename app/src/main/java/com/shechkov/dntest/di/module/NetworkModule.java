@@ -1,6 +1,6 @@
 package com.shechkov.dntest.di.module;
 
-import com.shechkov.dntest.api.ApiService;
+import com.shechkov.dntest.data.api.ApiService;
 
 import dagger.Module;
 import dagger.Provides;

@@ -1,22 +1,35 @@
-package com.shechkov.dntest.models;
+package com.shechkov.dntest.model;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Article {
+import org.jetbrains.annotations.NotNull;
 
+@Entity(tableName = "news")
+public class Article implements Parcelable {
+
+    @Embedded
     @SerializedName("source")
     @Expose
     private Source source;
     @SerializedName("author")
     @Expose
-    private Object author;
+    private String author;
     @SerializedName("title")
     @Expose
     private String title;
     @SerializedName("description")
     @Expose
     private String description;
+    @PrimaryKey
+    @NotNull
     @SerializedName("url")
     @Expose
     private String url;
@@ -30,6 +43,31 @@ public class Article {
     @Expose
     private String content;
 
+    protected Article(Parcel in) {
+        author = in.readString();
+        title = in.readString();
+        description = in.readString();
+        url = in.readString();
+        urlToImage = in.readString();
+        publishedAt = in.readString();
+        content = in.readString();
+    }
+
+    public Article() {
+    }
+
+    public static final Creator<Article> CREATOR = new Creator<Article>() {
+        @Override
+        public Article createFromParcel(Parcel in) {
+            return new Article(in);
+        }
+
+        @Override
+        public Article[] newArray(int size) {
+            return new Article[size];
+        }
+    };
+
     public Source getSource() {
         return source;
     }
@@ -38,11 +76,11 @@ public class Article {
         this.source = source;
     }
 
-    public Object getAuthor() {
+    public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(Object author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 
@@ -94,4 +132,19 @@ public class Article {
         this.content = content;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(author);
+        dest.writeString(title);
+        dest.writeString(description);
+        dest.writeString(url);
+        dest.writeString(urlToImage);
+        dest.writeString(publishedAt);
+        dest.writeString(content);
+    }
 }

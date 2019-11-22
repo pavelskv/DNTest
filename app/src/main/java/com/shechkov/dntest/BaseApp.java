@@ -1,32 +1,27 @@
 package com.shechkov.dntest;
 
-import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 
-import com.shechkov.dntest.di.component.ApplicationComponent;
-import com.shechkov.dntest.di.component.DaggerApplicationComponent;
-import com.shechkov.dntest.di.module.NetworkModule;
+import com.shechkov.dntest.di.component.ComponentManager;
 
 public class BaseApp extends Application {
 
-   public ApplicationComponent applicationComponent;
+   private ComponentManager componentManager;
 
    @Override
    public void onCreate() {
       super.onCreate();
 
-     applicationComponent = DaggerApplicationComponent.builder()
-             .networkModule(new NetworkModule())
-             .build();
-
-     applicationComponent.inject(this);
+       componentManager = new ComponentManager(this);
+       componentManager.init();
    }
 
-    public static BaseApp get(Activity activity){
-        return (BaseApp) activity.getApplication();
+    public ComponentManager getComponentManager() {
+        return componentManager;
     }
 
-   public ApplicationComponent getApplicationComponent(){
-       return applicationComponent;
-   }
+    public static BaseApp get(Context context){
+        return (BaseApp) context.getApplicationContext();
+    }
 }

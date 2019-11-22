@@ -36,7 +36,8 @@
             android:background="@drawable/retry_btn_background"
             android:padding="8dp"
             app:srcCompat="@drawable/ic_refresh"
-            android:tint="@color/colorPrimary" />
+            android:tint="@color/colorPrimary"
+            android:contentDescription="@string/retry_icon"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -60,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorGrayText"
-                android:text="Нажмите, чтобы повторить попытку"/>
+                android:text="@string/retry_press_msg"/>
 
         </LinearLayout>
 

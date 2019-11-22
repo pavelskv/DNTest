@@ -15,13 +15,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.shechkov.dntest.R;
+import com.shechkov.dntest.interfaces.AdapterItemClick;
 import com.shechkov.dntest.interfaces.PagintationAdapterCallback;
-import com.shechkov.dntest.models.Article;
+import com.shechkov.dntest.model.Article;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,15 +33,17 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Article> newsList;
     private PagintationAdapterCallback adapterCallback;
+    private AdapterItemClick adapterItemClick;
     private final RequestManager mGlide;
     private boolean isLoadingAdded = false;
     private String errorMsg;
     private boolean retryPageLoad = false;
 
-    public NewsAdapter(RequestManager mGlide, PagintationAdapterCallback adapterCallback) {
+    public NewsAdapter(RequestManager mGlide, PagintationAdapterCallback adapterCallback, AdapterItemClick adapterItemClick) {
         newsList = new ArrayList<>();
         this.mGlide = mGlide;
         this.adapterCallback = adapterCallback;
+        this.adapterItemClick = adapterItemClick;
     }
 
     @NonNull
@@ -88,7 +90,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return NEWS_ITEM_VIEW_TYPE;
     }
 
-    private Article getItem(int position) {
+    public Article getItem(int position) {
         return newsList.get(position);
     }
 
@@ -96,6 +98,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         newsList.add(article);
         notifyItemInserted(newsList.size() - 1);
     }
+
 
     public void addAll(List<Article> newsResults) {
         newsList.addAll(newsResults);
@@ -150,7 +153,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView dateText;
         private TextView descText;
 
-        public NewsViewHolder(@NonNull View itemView) {
+        NewsViewHolder(@NonNull View itemView) {
             super(itemView);
 
             imageNews = itemView.findViewById(R.id.image_news);
@@ -159,7 +162,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             descText = itemView.findViewById(R.id.text_desc);
         }
 
-        public void bind(Article article) {
+        void bind(Article article) {
 
             mGlide.load(article.getUrlToImage())
                     .apply(new RequestOptions().placeholder(new ColorDrawable(Color.parseColor("#26000000"))))
@@ -169,6 +172,13 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             titleText.setText(article.getTitle());
             dateText.setText(article.getPublishedAt());
             descText.setText(article.getDescription());
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    adapterItemClick.onItemClick(getAdapterPosition());
+                }
+            });
         }
     }
 
@@ -178,7 +188,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView mErrorTxt;
         private LinearLayout mErrorLayout;
 
-        public LoadingViewHolder(View itemView) {
+        LoadingViewHolder(View itemView) {
             super(itemView);
 
             mProgressBar = itemView.findViewById(R.id.loadmore_progress);
@@ -190,7 +200,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mErrorLayout.setOnClickListener(this);
         }
 
-        public void bind() {
+        void bind() {
             if (retryPageLoad) {
 
                 mErrorLayout.setVisibility(View.VISIBLE);
@@ -199,7 +209,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 mErrorTxt.setText(
                         errorMsg != null ?
                                 errorMsg :
-                                "ОШИБКА"); //TODO ИСПРАВИТЬ НА СТРОКОВЫЙ РЕСУРС
+                                itemView.getResources().getString(R.string.error_msg));
 
             } else {
                 mErrorLayout.setVisibility(View.GONE);

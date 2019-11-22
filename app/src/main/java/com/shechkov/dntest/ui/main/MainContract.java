@@ -1,10 +1,8 @@
 package com.shechkov.dntest.ui.main;
 
-import com.shechkov.dntest.models.News;
+import com.shechkov.dntest.model.News;
 import com.shechkov.dntest.ui.base.IBasePresenter;
 import com.shechkov.dntest.ui.base.IBaseView;
-
-import java.util.List;
 
 public interface MainContract {
 
@@ -17,8 +15,6 @@ public interface MainContract {
         void hideLoading();
 
         void showError(String message);
-
-        void showToast(String message);
 
         void showFooterError(boolean show, String errorMsg);
 

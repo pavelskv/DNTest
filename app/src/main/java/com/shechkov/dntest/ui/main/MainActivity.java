@@ -1,27 +1,25 @@
 package com.shechkov.dntest.ui.main;
 
+import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.shechkov.dntest.BaseApp;
 import com.shechkov.dntest.R;
-import com.shechkov.dntest.di.component.ApplicationComponent;
+import com.shechkov.dntest.interfaces.AdapterItemClick;
 import com.shechkov.dntest.interfaces.PagintationAdapterCallback;
-import com.shechkov.dntest.models.News;
+import com.shechkov.dntest.model.News;
 import com.shechkov.dntest.ui.adapter.NewsAdapter;
-
-import java.util.List;
+import com.shechkov.dntest.ui.details.DetailsActivity;
+import com.shechkov.dntest.ui.main.di.MainActivityModule;
 
 import javax.inject.Inject;
 
@@ -32,8 +30,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout errorLayout;
+    private LinearLayoutManager linearLayoutManager;
 
-    public MainPresenterImpl presenter;
+    @Inject
+    public MainContract.Presenter presenter;
 
     private int TOTAL_PAGES = 5;
     private boolean isLoading = false;
@@ -44,15 +44,18 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        progressBar = findViewById(R.id.progress_bar);
-        recyclerView = findViewById(R.id.rv_news);
-        swipeRefreshLayout = findViewById(R.id.refresh_list);
-        errorLayout = findViewById(R.id.error_layout);
-        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryDark));
+        bindViews();
+        BaseApp.get(this)
+                .getComponentManager()
+                .getActivityComponent(getClass(), new MainActivityModule(this))
+                .inject(this);
+
+        setTitle(getResources().getString(R.string.news_title));
+
+        linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setInitialPrefetchItemCount(5);
 
         recyclerView.setHasFixedSize(true);
-
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         adapter = new NewsAdapter(Glide.with(this), new PagintationAdapterCallback() {
@@ -60,31 +63,26 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             public void retryPageLoad() {
                 presenter.loadMore(currentPage);
             }
+        }, new AdapterItemClick() {
+            @Override
+            public void onItemClick(int position) {
+                startActivity(DetailsActivity.newIntent(MainActivity.this, adapter.getItem(position)));
+            }
         });
 
         recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(onScrollListener);
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+        presenter.attachView(this);
+        presenter.loadData();
+    }
 
-                int visibleItemCount = linearLayoutManager.getChildCount();
-                int totalItemCount = linearLayoutManager.getItemCount();
-                int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
-
-                if (!isLoading)
-                {
-                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0)
-                    {
-                        isLoading = true;
-                        currentPage += 1;
-
-                        presenter.loadMore(currentPage);
-                    }
-                }
-            }
-        });
+    private void bindViews() {
+        progressBar = findViewById(R.id.progress_bar);
+        recyclerView = findViewById(R.id.rv_news);
+        swipeRefreshLayout = findViewById(R.id.refresh_list);
+        errorLayout = findViewById(R.id.error_layout);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryDark));
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -99,10 +97,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 presenter.loadData();
             }
         });
-
-        presenter = new MainPresenterImpl(getApplication());
-        presenter.attachView(this);
-        presenter.loadData();
     }
 
     @Override
@@ -112,6 +106,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         adapter.addAll(news.getArticles());
 
         if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.detachView();
+        if (isFinishing()) {
+            BaseApp.get(this).getComponentManager().releaseActivityComponent(getClass());
+        }
     }
 
     @Override
@@ -132,11 +135,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
-    public void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void showFooterError(boolean show, String errorMsg) {
         adapter.showRetry(show, errorMsg);
     }
@@ -147,4 +145,24 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         adapter.showRetry(false, "");
         currentPage = 1;
     }
+
+    private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            int visibleItemCount = linearLayoutManager.getChildCount();
+            int totalItemCount = linearLayoutManager.getItemCount();
+            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+
+            if (!isLoading) {
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
+                    isLoading = true;
+                    currentPage += 1;
+
+                    presenter.loadMore(currentPage);
+                }
+            }
+        }
+    };
 }

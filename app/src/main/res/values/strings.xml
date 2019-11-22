@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">DNTest</string>
+    <string name="error_msg">Error</string>
+    <string name="news_title">News</string>
+    <string name="connection_error">Connection error</string>
+    <string name="server_msg">The server took too long to respond</string>
+    <string name="retry_btn">Retry</string>
+    <string name="retry_press_msg">Click to try again</string>
+    <string name="retry_icon">Retry</string>
+    <string name="news_image">Image news</string>
 </resources>
